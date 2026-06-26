@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Add Student</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        form {
+            max-width: 420px;
+            margin: 50px auto 0;
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+        }
+
+        #studentName,
+        #phoneNumber,
+        #dob,
+        #department,
+        #email,
+        #password,
+        #confirmPassword {
+            width: 100%;
+            padding: 10px 14px;
+            margin-bottom: 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #111827;
+            box-sizing: border-box;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        #studentName::placeholder,
+        #phoneNumber::placeholder,
+        #email::placeholder,
+        #password::placeholder,
+        #confirmPassword::placeholder {
+            color: #9ca3af;
+        }
+
+        #studentName:focus,
+        #phoneNumber:focus,
+        #dob:focus,
+        #department:focus,
+        #email:focus,
+        #password:focus,
+        #confirmPassword:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .submit-section {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .button-add,
+        .button-cancel {
+            flex: 1;
+            padding: 10px 0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.05s;
+        }
+
+        .button-add {
+            background-color: #2563eb;
+            color: #ffffff;
+            border: none;
+        }
+
+        .button-add:hover {
+            background-color: #1d4ed8;
+        }
+
+        .button-add:active {
+            transform: scale(0.98);
+        }
+
+        .button-cancel {
+            background-color: #ffffff;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+        .button-cancel:hover {
+            background-color: #f3f4f6;
+        }
+
+        .button-cancel:active {
+            transform: scale(0.98);
+        }
+
+        .list-button {
+            display: block;
+            max-width: 420px;
+            margin: 16px auto 0;
+            padding: 10px 0;
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .list-button:hover {
+            background-color: #f3f4f6;
+        }
+
+        .list-button a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .list-button a:hover {
+            text-decoration: underline;
+        }
+
+        #message {
+            max-width: 420px;
+            margin: 12px auto 0;
+            text-align: center;
+            font-size: 14px;
+            color: #dc2626;
+        }
+
+        h2 {
+            max-width: 420px;
+            margin: 50px auto 0;
+            font-size: 24px;
+            font-weight: 600;
+            color: #111827;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Add Student</h2>
+
+    <form id="studentForm" action="/api/student" method="POST">
+        <input type="text" id="studentName" name="studentName" placeholder="StudentName" required>
+
+        <input type="text" id="phoneNumber" name="phoneNumber" placeholder="PhoneNumber" required>
+
+        <input type="date" id="dob" name="dob" required>
+
+        <select id="department" name="department" required>
+            <option value="">Select Department</option>
+            <option value="B.COM">B.COM</option>
+            <option value="BBA">BBA</option>
+            <option value="B.SC(COMPUTER SCIENCE)">B.SC(COMPUTER SCIENCE)</option>
+            <option value="B.SC(IT)">B.SC(IT)</option>
+        </select>
+
+        <input type="email" id="email" name="email" placeholder="Email" required>
+
+        <input type="password" id="password" name="password" placeholder="Password" required>
+
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required>
+        <div class="submit-section">
+            <button type="button" class="button-cancel" onclick="cancelForm()">Cancel</button>
+
+            <button type="submit" class="button-add">Add Student</button>
+        </div>
+    </form>
+    <button class="list-button"><a href="/students">view Customer List</a></button>
+
+
+    <p id="message"></p>
+
+    <script>
+
+        function cancelForm() {
+            document.querySelector('form').reset();
+        }
+
+        document
+            .getElementById("studentForm")
+            .addEventListener("submit", async function (e) {
+
+
+                const studentName = document.getElementById("studentName").value.trim()
+                const phoneNumber = document.getElementById("phoneNumber").value.trim()
+                const dob = document.getElementById("dob").value
+                const department = document.getElementById("department").value
+                const email = document.getElementById("email").value
+                const password = document.getElementById("password").value;
+                const confirmPassword = document.getElementById("confirmPassword").value;
+                const errors = [];
+
+                if (!(studentName && studentName.length >= 3)) {
+                    errors.push("Student name must contain 3 characters")
+                };
+
+                if (!(phoneNumber && phoneNumber.length === 10 &&
+                    /^\d+$/.test(phoneNumber))) {
+                    errors.push("phoneNumber must contain exactly 10 digits")
+                };
+
+                if (!dob) {
+                    errors.push("DOB is required");
+                }
+                else if (!/^\d{4}-\d{2}-\d{2}$/.test(dob)) {
+                    errors.push("DOB format must be YYYY-MM-DD");
+                }
+
+                if (!validDepartments.includes(department)) {
+                    errors.push("Please select a valid department");
+                }
+
+                if (
+                    !(email &&
+                        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email))
+                ) {
+                    errors.push("Invalid Email Address");
+                }
+
+                if (!(password && password.length >= 6)) {
+                    errors.push(
+                        "Password must contain at least 6 characters"
+                    );
+                }
+
+                if (password !== confirmPassword) {
+                    errors.push(
+                        "Password and Confirm Password must match"
+                    );
+                }
+
+                if (errors.length > 0) {
+                    e.preventDefault();
+                    alert(errors.join("\n"));
+                }
+
+            });
+
+    </script>
+
+</body>
+
+</html>

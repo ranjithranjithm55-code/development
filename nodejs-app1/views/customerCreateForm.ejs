@@ -1,0 +1,91 @@
+<!DOCTYPE >
+<html>
+
+<style>
+    .list-button {
+        margin: 5pxpx;
+    }
+
+    .submit-customer {
+        margin: 5px
+    }
+</style>
+
+<head>
+    <title>Customer Form</title>
+</head>
+
+<body>
+
+    <h2>Add Customer</h2>
+
+    <form id="customerForm" action="/api/customer" method="POST">
+
+        <label>Customer Name:</label>
+        <input type="text" id="customerName" name="customerName" required>
+
+        <br><br>
+
+        <label>Phone Number:</label>
+        <input type="number" id="phoneNumber" name="phoneNumber" required>
+
+        <br><br>
+
+        <label>Blood Group:</label>
+        <select id="bloodGroup" name="bloodGroup">
+            <option value="">Select</option>
+            <option value="A+">A+</option>
+            <option value="B+">B+</option>
+            <option value="O+">O+</option>
+        </select>
+
+        <br><br>
+
+        <label>Date of Birth:</label>
+        <input type="date" id="dob" name="dob" required>
+
+        <br><br>
+
+        <button class="list-button"><a href="/customers">View Customer List</a></button>
+
+        <button class="submit-customer" type="submit">Save Customer</button>
+
+    </form>
+
+
+</body>
+<script>
+    document.getElementById("customerForm").addEventListener("submit", function (e) {
+
+        const customerName = document.getElementById("customerName").value.trim();
+        const phoneNumber = document.getElementById("phoneNumber").value.trim();
+        const dob = document.getElementById("dob").value;
+        const bloodGroup = document.getElementById("bloodGroup").value;
+
+        let errors = [];
+
+        if (customerName.length < 3) {
+            errors.push("Customer name must have at least 3 characters");
+        }
+
+        if (!/^\d{10}$/.test(phoneNumber)) {
+            errors.push("Phone number must contain exactly 10 digits");
+        }
+
+        if (!dob) {
+            errors.push("DOB is required");
+        }
+
+        if (!bloodGroup) {
+            errors.push("Blood Group is required");
+        }
+
+        if (errors.length > 0) {
+            e.preventDefault(); // stop form submission
+            alert(errors.join("\n"));
+        }
+
+    });
+</script>
+
+</html>

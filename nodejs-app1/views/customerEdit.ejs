@@ -1,0 +1,93 @@
+<!DOCTYPE >
+<html>
+
+<body>
+<form id="editCustomerForm">
+
+    <input type="text" id="customerName">
+
+    <input type="number" id="phoneNumber">
+
+    <input type="date" id="dob">
+
+    <input type="text" id="bloodGroup">
+
+    <button type="submit">
+        Update Customer
+    </button>
+
+</form>
+</body>
+<script>
+
+const params = new URLSearchParams(window.location.search);
+
+const customerId = params.get("id");
+
+fetch(`/api/customer/${customerId}`)
+    .then(res => res.json())
+    .then(customer => {
+
+        document.getElementById("customerName").value =
+            customer.customerName;
+
+        document.getElementById("phoneNumber").value =
+            customer.phoneNumber;
+
+        document.getElementById("dob").value =
+            customer.dob.substring(0, 10);
+
+        document.getElementById("bloodGroup").value =
+            customer.bloodGroup;
+    }).catch((err) => {
+        console.error(error);
+    })
+
+document.getElementById("editCustomerForm")
+    .addEventListener("submit", async (e) => {
+
+    e.preventDefault();
+
+    const data = {
+        customerName:
+            document.getElementById("customerName").value,
+
+        phoneNumber:
+            document.getElementById("phoneNumber").value,
+
+        dob:
+            document.getElementById("dob").value,
+
+        bloodGroup:
+            document.getElementById("bloodGroup").value
+    };
+
+    const response =
+        await fetch(`/api/customer/${customerId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+    
+
+    if (response.ok) {
+
+        alert("Customer Updated Successfully");
+
+        window.location.href = "/customers";
+
+    } else {
+        const result = await response.json();
+
+        alert(result.message);
+
+    }
+
+});
+
+</script>
+
+</html>
