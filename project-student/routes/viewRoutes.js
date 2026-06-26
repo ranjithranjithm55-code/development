@@ -7,8 +7,28 @@ router.get("/", (req, res) => {
     res.render("home");
 });
 
+router.get("/login", (req, res) => {
+    res.render("home");
+});
+
 router.get("/student/create", (req, res) => {
     res.render("studentCreateForm");
+});
+
+router.get("/student/dashboard", (req, res) => {
+
+    if (!req.session.studentId) {
+        return res.redirect("/");
+    }
+
+    res.render("dashboard", {
+        studentName: req.session.studentName
+    });
+
+});
+
+router.get("/student/login", (req, res) => {
+    res.render("studentLogin");
 });
 
 router.get("/students", (req, res) => {

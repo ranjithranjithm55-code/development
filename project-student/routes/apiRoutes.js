@@ -13,44 +13,48 @@ const UPDATE_STUDENT_QUREY = `
       password = ?
     WHERE studentId = ?
 `;
+
 router.post("/student/login", (req, res) => {
 
     const { email, password } = req.body;
 
     db.query(
-        `SELECT * FROM studentinfo WHERE email=?`,
-        [email],
-        (err, rows) => {
+        "SELECT * FROM studentinfo WHERE email=? AND password=?",
+        [email, password],
+        (err, result) => {
 
             if (err)
-                return res.status(500).json(err);
+                return res.status(500).send("Sorry Internal Error");
 
-            if (rows.length === 0) {
-                return res.status(401).json({
-                    message: "No account found with that email"
-                });
-            }
+            if (result.length === 0)
+                return res.status(401).send("Invalid username or password");
 
-            const student = rows[0];
+            const {
+                studentId,
+                studentName
+            } = result[0]
 
-            if (student.password !== password) {
-                return res.status(401).json({
-                    message: "Incorrect password"
-                });
-            }
+            req.session.studentId = studentId;
+            req.session.studentName = studentName;
 
-            res.json({
-                message: "Login successful",
-                student: {
-                    id: student.id,
-                    studentName: student.studentName,
-                    email: student.email,
-                    department: student.department
-                }
-            });
+            res.status(200).json({message:'login success'})
         }
     );
 });
+
+router.get("/student/logout", (req, res) => {
+
+  req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).json({
+                message: "Logout failed"
+            });
+        }
+        res.clearCookie("connect.sid");
+        res.status(200).json({message: 'logout success'});
+    });
+});
+
 
 router.post("/student", (req, res) => {
 

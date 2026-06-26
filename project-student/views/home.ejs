@@ -1,50 +1,240 @@
-<body>
+<!DOCTYPE html>
+<html lang="en">
 
-    <h2>Student Login</h2>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login</title>
 
-    <form id="loginForm" action="/api/student/login" method="POST">
-        <input type="email" id="email" name="email" placeholder="Email" required>
-
-        <input type="password" id="password" name="password" placeholder="Password" required>
-
-        <div class="submit-section">
-            <button type="button" class="button-cancel" onclick="cancelForm()">Cancel</button>
-
-            <button type="submit" class="button-add">Login</button>
-        </div>
-    </form>
-
-    <p id="message" style="color: #dc2626;"></p>
-
-    <script>
-        function cancelForm() {
-            document.querySelector('form').reset();
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(178deg, #4b6cb7 0%, #182848 100%);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        document
-            .getElementById("loginForm")
-            .addEventListener("submit", function (e) {
+        .container {
+            width: 360px;
+        }
 
-                const email = document.getElementById("email").value.trim();
-                const password = document.getElementById("password").value;
-                const errors = [];
+        h2 {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+        }
 
-                if (
-                    !(email &&
-                        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email))
-                ) {
-                    errors.push("Invalid Email Address");
+        #loginForm {
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.25);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #4b6cb7;
+            box-shadow: 0 0 5px rgba(75,108,183,.4);
+        }
+
+        .submit-section {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .button-add {
+            background: #4b6cb7;
+            color: white;
+        }
+
+        .button-add:hover {
+            background: #39549d;
+        }
+
+        .button-cancel {
+            background: #ddd;
+        }
+
+        .button-cancel:hover {
+            background: #c8c8c8;
+        }
+
+        .register-btn {
+            width: 100%;
+            margin-top: 15px;
+            background: white;
+            color: #4b6cb7;
+            border: 2px solid #4b6cb7;
+        }
+
+        .register-btn:hover {
+            background: #4b6cb7;
+            color: white;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h2>Student Login</h2>
+
+        <form id="loginForm">
+
+            <input
+                type="email"
+                id="email"
+                placeholder="Email"
+                value="ranjith55m@gmail.com"
+                required>
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Password"
+                value="ranjith06"
+                required>
+
+            <div class="submit-section">
+                <button type="button"
+                    class="button-cancel"
+                    onclick="cancelForm()">
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="button-add">
+                    Login
+                </button>
+            </div>
+
+            <button
+                type="button"
+                class="register-btn"
+                onclick="window.location.href='/student/create'">
+                Register Student
+            </button>
+
+            <p id="message"></p>
+
+        </form>
+
+    </div>
+
+    <script>
+
+        function cancelForm() {
+            document.getElementById("loginForm").reset();
+            document.getElementById("message").textContent = "";
+        }
+
+        const form = document.getElementById("loginForm");
+
+        form.addEventListener("submit", async function (e) {
+
+            e.preventDefault();
+
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+            const message = document.getElementById("message");
+
+            message.textContent = "";
+
+            if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+                message.style.color = "red";
+                message.textContent = "Invalid Email Address";
+                return;
+            }
+
+            if (password === "") {
+                message.style.color = "red";
+                message.textContent = "Password is required";
+                return;
+            }
+
+            try {
+
+                const response = await fetch("/api/student/login", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    credentials: "include",
+
+                    body: JSON.stringify({
+                        email,
+                        password
+                    })
+
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+
+                    message.style.color = "green";
+                    message.textContent = data.message;
+
+                    setTimeout(() => {
+
+                        window.location.href = "/student/dashboard";
+
+                    }, 1000);
+
+                } else {
+
+                    message.style.color = "red";
+                    message.textContent = data.message;
+
                 }
 
-                if (!password) {
-                    errors.push("Password is required");
-                }
+            } catch (err) {
 
-                if (errors.length > 0) {
-                    e.preventDefault();
-                    alert(errors.join("\n"));
-                }
-            });
+                console.error(err);
+
+                message.style.color = "red";
+                message.textContent = "Server Error";
+
+            }
+
+        });
+
     </script>
 
 </body>
+
+</html>
