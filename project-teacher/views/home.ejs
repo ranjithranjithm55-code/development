@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Teacher Login</title>
+</head>
+<style>
+
+</style>
+
+<body>
+
+    <h2>Teacher Login</h2>
+
+    <form id="loginForm">
+
+        <input type="email" id="email" placeholder="Email" required>
+
+        <input type="password" id="password" placeholder="password" required>
+
+        <button type="button" class="button-cancel" onclick="cancelForm()">Cancel</button>
+
+        <button type="submit">
+            Login
+        </button>
+
+        <button type="button" class="register-btn" onclick="window.location.href='/teacher/create'">Register
+            teacher</button>
+
+        <p id="message"></p>
+
+    </form>
+
+    <script>
+
+        function cancelForm() {
+            document.getElementById("loginForm").reset()
+            document.getElementById("message").textContent = ""
+        }
+
+        const form = document.getElementById("loginForm")
+
+        form.addEventListener("submit", async function (e) {
+
+            e.preventDefault()
+
+            const email = document.getElementById("email").value.trim()
+            const password = document.getElementById("password").value
+            const message = document.getElementById("message")
+
+            message.textContent = ""
+            if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+                message.style.color = "red";
+                message.textContent = "Invalid Email Address";
+                return;
+            }
+
+            if (password === "") {
+                message.style.color = "red";
+                message.textContent = "Password is required";
+                return;
+            }
+
+            try {
+
+                const response = await fetch("/api/teacher/login", {
+
+                    method: "POST",
+
+                    headers: {
+                        "content-type": "application/json"
+                    },
+
+                    credentials: "include",
+
+                    body: JSON.stringify({
+                        email,
+                        password
+                    })
+
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+
+                    message.style.color = "green";
+                    message.textContent = data.message;
+
+                    setTimeout(() => {
+
+                        window.location.href = "/teacher/result"
+
+                    }, 1000);
+                } else {
+
+                    message.style.color = "red"
+                    message.textContent = data.message
+
+                }
+
+            } catch (err) {
+
+                console.error(err)
+
+                message.style.color = "red"
+                message.textContent = "server Error"
+
+            }
+
+        })
+
+    </script>
+</body>
+
+</html>

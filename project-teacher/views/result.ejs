@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        result
+    </title>
+</head>
+
+<body>
+    <h1> welcome <%= teacherName %>
+    </h1>
+
+    <p>You have successfully logged in.</p>
+
+    <button type="button" onclick="window.location.href='/teachers'">Teacher List</button>
+
+    <br>
+
+    <button type="button" onclick="logout()">logout</button>
+
+
+    <script>
+        async function logout() {
+
+            try {
+
+                const response = await fetch("/api/teacher/logout", {
+                    method: "GET",
+                    credentials: "include"
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert(data.message);
+                    window.location.href = "/";
+                } else {
+                    alert(data.message);
+                }
+
+            } catch (err) {
+                console.error(err);
+                alert("Something went wrong.");
+            }
+
+        }
+    </script>
+</body>
+
+</html>

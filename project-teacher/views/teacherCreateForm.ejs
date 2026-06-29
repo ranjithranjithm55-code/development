@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Add teacher</title>
+</head>
+
+<style>
+
+</style>
+
+<body>
+
+    <h2>
+        Add teacher
+    </h2>
+
+    <form id="teacherForm" action="/api/teacher" method="POST">
+       <input type="text" id="teacherName" name="teacherName" placeholder="Teacher Name" required>
+
+        <input type="number" id="phoneNumber" name="phoneNumber" placeholder="PhoneNumber" required>
+
+        <input type="date" id="dob" name="dob" required>
+
+        <input type="email" id="email" name="email" placeholder="Email" required>
+
+        <input type="password" id="password" name="password" placeholder="Password" required>
+
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="confirm Password" required>
+
+        <div class="submit-section">
+            <button type="button" class="button-cancel" onclick="cancelForm()">Cancel</button>
+
+            <button type="submit" class="button-add">Add Student</button>
+        </div>
+    </form>
+    <button class="list-button"><a href="/teachers">view teacher List</a></button>
+
+    <p id="message"></p>
+
+    <script>
+
+        function cancelForm() {
+            document.querySelector('form').reset()
+        }
+
+        document
+            .getElementById("teacherForm")
+            .addEventListener("submit", async function (e) {
+
+                const teacherName = document.getElementById("teacherName").value.trim()
+                const phoneNumber = document.getElementById("phoneNumber").value.trim()
+                const dob = document.getElementById("dob").value
+                const email = document.getElementById("email").value
+                const password = document.getElementById("password").value;
+                const confirmPassword = document.getElementById("confirmPassword").value;
+                const errors = [];
+
+                if (!(teacherName && teacherName.length >= 3)) {
+                    errors.push("student name must contain 3 charecters")
+                }
+
+                if (!(phoneNumber && phoneNumber.length === 10 &&
+                    /^\d+$/.test(phoneNumber))) {
+                    errors.push("phoneNumber must contain exactly 10 digits")
+                };
+
+                if (!dob) {
+                    errors.push("DOB is required");
+                }
+                else if (!/^\d{4}-\d{2}-\d{2}$/.test(dob)) {
+                    errors.push("DOB format must be YYYY-MM-DD");
+                }
+
+                if (
+                    !(email &&
+                        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email))
+                ) {
+                    errors.push("Invalid Email Address");
+                }
+
+                if (!(password && password.length >= 6)) {
+                    errors.push(
+                        "Password must contain at least 6 characters"
+                    );
+                }
+
+                if (password !== confirmPassword) {
+                    errors.push(
+                        "Password and Confirm Password must match"
+                    );
+                }
+
+                if (errors.length > 0) {
+                    e.preventDefault();
+                    alert(errors.join("\n"));
+                }
+                
+            })
+
+    </script>
+</body>
+
+</html>
