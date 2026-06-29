@@ -3,7 +3,6 @@ const path = require("path")
 const session = require("express-session")
 const cookieparser = require("cookie-parser")
 
-
 const db = require("./config/db");
 
 const app = express()
