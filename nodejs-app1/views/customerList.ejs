@@ -1,0 +1,126 @@
+<!DOCTYPE >
+<html>
+
+<head>
+    <title>Customer List</title>
+
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: lightgray;
+        }
+        .create-customer{
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>List Customers</h2>
+
+    <table>
+
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Phone Number</th>
+            <th>Date of Birth</th>
+            <th>Blood Group</th>
+            <th>Action</th>
+        </tr>
+        <tbody id="customerBody"></tbody>
+
+    </table> 
+
+   <button class="create-customer"><a href="/customer/create">Create Customer</a></button>
+
+    <p id="noData"></p>
+
+    <br>
+
+</body>
+
+<script>
+    async function loadCustomers() { // async na enna 
+
+        try {
+
+            const response = await fetch("/api/customer");  //ithula response pota thanave res nu eduthukkuma
+            const customer = await response.json();
+
+            const tbody = document.getElementById("customerBody");
+            const noData = document.getElementById("noData");
+
+            tbody.innerHTML = "";
+
+            if (customer.length === 0) {
+                noData.innerText = "No customer Found";
+                return;
+            }
+
+            var dataRowHtml = ''
+
+            customer.forEach(customer => {
+
+                dataRowHtml += ` 
+                        <tr>
+                            <td>${customer.customerId}</td>
+                            <td>${customer.customerName}</td>
+                            <td>${customer.phoneNumber}</td>
+                            <td>${customer.dob.split('T')[0]}</td>
+                            <td>${customer.bloodGroup}</td>
+                         <td><a href="/customer/edit/?id=${customer.customerId}">Edit</a>
+                            / 
+
+                            <a href="javascript:;" onclick="deleteCustomer(${customer.customerId})">
+                              Delete
+                             </a>
+                            </td>
+       
+                        </tr>
+                       
+                    `;
+            });
+
+            tbody.innerHTML = dataRowHtml
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    loadCustomers();
+</script>
+
+<script>
+async function deleteCustomer(id) {
+
+    if (!confirm("Are you sure you want to delete this customer?")) {
+        return;
+    }
+
+    const res = await fetch(`/api/customer/${id}`, { // ithu epdi execute aagum
+        method: "DELETE"
+    });
+
+    const result = await res.json();
+
+    alert(result.message);
+
+    loadCustomers(); // Reload table
+}
+</script>
+
+</html>

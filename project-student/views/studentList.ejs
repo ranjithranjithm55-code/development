@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>student List</title>
+</head>
+<style>
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th,
+    td {
+        border: 1px solid black;
+        padding: 10px;
+        text-align: left;
+    }
+
+    th {
+        background-color: lightgray;
+    }
+
+    .create-customer {
+        margin: 5px;
+    }
+
+    
+</style>
+
+<body>
+    <h2>List Students</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>phoneNumber</th>
+            <th>Dob</th>
+            <th>Department</th>
+            <th>Email</th>
+            <th>Password</th>
+            <th>Action</th>
+        </tr>
+        <tbody id="studentBody"></tbody>
+
+    </table>
+
+    <button class="create-customer"><a href="/student/create">create student</a></button>
+
+    <p id="noData"></p>
+
+    <br>
+</body>
+<script>
+    async function loadStudents() {
+        try {
+            const response = await fetch("/api/student");
+            const student = await response.json();
+
+            const tBody = document.getElementById("studentBody");
+            const noData = document.getElementById("noData");
+
+            tBody.innerHTML = "";
+
+            if (student.length === 0) {
+                noData.innerText = "no student Found"
+                return;
+            }
+            var dataRowHtml = ""
+
+            student.forEach(student => {
+                dataRowHtml += `
+                <tr>
+                    <td>${student.studentId}</td>
+                    <td>${student.studentName}</td>
+                    <td>${student.phoneNumber}</td>
+                    <td>${student.dob.split('t')[0]}</td>
+                    <td>${student.department}</td>
+                    <td>${student.email}</td>
+                    <td>${student.password}</td>
+                    <td>
+                        <a href="/student/edit?id=${student.studentId}"> EDIT </a> 
+                            /
+                         <button onclick="deletestudent(${student.studentId})">
+                                 DELETE
+                         </button>
+                    </td>
+                </tr>`;     
+
+            });
+
+            tBody.innerHTML = dataRowHtml
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    loadStudents();
+</script>
+<script>
+    async function deletestudent(id) {
+
+        if (!confirm("are you sure you want to delete this customer?")) {
+            return
+        }
+
+        const res = await fetch(`/api/student/${id}`, {
+            method: "DELETE"
+        });
+
+        const result = await res.json();
+
+        alert(result.message);
+
+        loadStudents();
+    }
+</script>
+
+</html>

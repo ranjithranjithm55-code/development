@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Edit Student</title>
+</head>
+<style>
+    
+</style>
+<body>
+
+    <h2>Edit Student</h2>
+
+    <form id="studentForm">
+
+        <label>Student Name</label>
+        <input type="text" id="studentName" required>
+        <br><br>
+
+        <label>Phone Number</label>
+        <input type="text" id="phoneNumber" required>
+        <br><br>
+
+        <label>DOB</label>
+        <input type="date" id="dob" required>
+        <br><br>
+
+        <label>Department</label>
+        <select id="department" required>
+            <option value="">Select Department</option>
+            <option value="B.COM">B.COM</option>
+            <option value="BBA">BBA</option>
+            <option value="B.SC(COMPUTER SCIENCE)">B.SC(COMPUTER SCIENCE)</option>
+            <option value="B.SC(IT)">B.SC(IT)</option>
+        </select>
+        <br><br>
+
+        <label>Email</label>
+        <input type="email" id="email" required>
+        <br><br>
+
+        <label>Password</label>
+        <input type="password" id="password" required>
+        <br><br>
+
+        <button type="submit">
+            Update Student
+        </button>
+
+    </form>
+
+    <script>
+
+        const params = new URLSearchParams(window.location.search);
+        const studentId = params.get("id");
+
+        fetch(`/api/student/${studentId}`)
+            .then(res => res.json())
+            .then(student => {
+
+                document.getElementById("studentName").value =
+                    student.studentName;
+
+                document.getElementById("phoneNumber").value =
+                    student.phoneNumber;
+
+                document.getElementById("dob").value =
+                    student.dob.split("T")[0];
+
+                document.getElementById("department").value =
+                    student.department;
+
+                document.getElementById("email").value =
+                    student.email;
+
+                document.getElementById("password").value =
+                    student.password;
+            });
+
+        document.getElementById("studentForm")
+            .addEventListener("submit", async (e) => {
+
+                e.preventDefault();
+
+                const student = {
+
+                    studentName:
+                        document.getElementById("studentName").value,
+
+                    phoneNumber:
+                        document.getElementById("phoneNumber").value,
+
+                    dob:
+                        document.getElementById("dob").value,
+
+                    department:
+                        document.getElementById("department").value,
+
+                    email:
+                        document.getElementById("email").value,
+
+                    password:
+                        document.getElementById("password").value
+                };
+
+                const response = await fetch(
+                    `/api/student/${studentId}`,
+                    {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(student)
+                    }
+                );
+
+                if (response.ok) {
+                    alert("student updated successfully")
+
+                    window.location.href = "/students"
+
+                } else {
+                    const result = await response.json()
+                    alert(result.message)
+                }
+            })
+    </script>
+
+</body>
+
+</html>
